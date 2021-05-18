@@ -31,7 +31,7 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@nebular/theme/styles/prebuilt/dark.css",
+              "node_modules/ng-zorro-antd/ng-zorro-antd.dark.less",
               "src/styles.scss"
             ],
             "scripts": []

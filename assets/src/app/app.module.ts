@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NbButtonModule, NbCardModule, NbDialogModule, NbLayoutModule, NbThemeModule } from '@nebular/theme';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { IndexComponent } from '../components/index.component';
 import { GithubService } from '../services/github.service';
 import { UserService } from '../services/user.service';
@@ -13,18 +13,7 @@ import { GraphQLModule } from './graphql.module';
 
 @NgModule({
   declarations: [AppComponent, IndexComponent],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    NbButtonModule,
-    NbCardModule,
-    NbThemeModule.forRoot({ name: 'dark' }),
-    NbDialogModule.forRoot({}),
-    NbLayoutModule,
-    GraphQLModule,
-    HttpClientModule,
-  ],
+  imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, GraphQLModule, HttpClientModule, NzButtonModule],
   providers: [GithubService, UserService],
   bootstrap: [AppComponent],
 })
