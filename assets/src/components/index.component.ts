@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, TemplateRef, ViewChild } from '@angular/core';
 import { NbDialogRef, NbDialogService } from '@nebular/theme';
+import { GithubService } from '../services/github.service';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -10,19 +11,16 @@ export class IndexComponent implements AfterViewInit {
   private dialogRef: NbDialogRef<unknown> | null = null;
   @ViewChild('loginTemplate', { read: TemplateRef }) loginTemplateRef!: TemplateRef<unknown>;
 
-  constructor(private readonly userService: UserService, private readonly dialogService: NbDialogService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly dialogService: NbDialogService,
+    private readonly githubService: GithubService,
+  ) {}
 
   ngAfterViewInit() {
-    const token = this.userService.getToken();
-    if (!token) {
-      setTimeout(() => {
-        this.dialogRef = this.dialogService.open(this.loginTemplateRef, {
-          hasBackdrop: true,
-          hasScroll: false,
-          closeOnBackdropClick: false,
-          closeOnEsc: false,
-        });
-      });
-    }
+    this.githubService
+      .getMe()
+      .result()
+      .then((value) => console.log(value.data));
   }
 }

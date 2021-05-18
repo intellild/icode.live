@@ -13,10 +13,11 @@ defmodule IcodeWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", IcodeWeb do
-    pipe_through :browser
+  scope "/auth", IcodeWeb do
+    pipe_through :api
 
-    get "/", PageController, :index
+    get "/github", GithubController, :auth
+    get "/github/callback", GithubController, :callback
   end
 
   # Other scopes may use custom stacks.

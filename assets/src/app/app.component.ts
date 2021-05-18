@@ -4,7 +4,9 @@ import { Component } from '@angular/core';
   selector: 'app-root',
   template: `
     <nb-layout>
-      <router-outlet></router-outlet>
+      <nb-layout-column>
+        <router-outlet></router-outlet>
+      </nb-layout-column>
     </nb-layout>
   `,
   styles: [

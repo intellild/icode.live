@@ -34,3 +34,5 @@ npm-debug.log
 /priv/static/
 
 .idea
+
+config/dev.config.exs

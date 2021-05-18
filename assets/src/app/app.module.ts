@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbButtonModule, NbCardModule, NbDialogModule, NbLayoutModule, NbThemeModule } from '@nebular/theme';
 import { IndexComponent } from '../components/index.component';
+import { GithubService } from '../services/github.service';
 import { UserService } from '../services/user.service';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -24,7 +25,7 @@ import { GraphQLModule } from './graphql.module';
     GraphQLModule,
     HttpClientModule,
   ],
-  providers: [UserService],
+  providers: [GithubService, UserService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

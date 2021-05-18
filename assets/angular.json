@@ -69,7 +69,8 @@
         "serve": {
           "builder": "ngx-build-plus:dev-server",
           "options": {
-            "browserTarget": "show-me-the-code:build"
+            "browserTarget": "show-me-the-code:build",
+            "proxyConfig": "./proxy.config.json"
           },
           "configurations": {
             "production": {

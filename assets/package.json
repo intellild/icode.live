@@ -7,7 +7,9 @@
     "build": "ng build --plugin ~build-plugin.js",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "gql:schema": "apollo client:download-schema",
+    "gql:codegen": "apollo client:codegen --target typescript"
   },
   "private": true,
   "dependencies": {
@@ -28,7 +30,6 @@
     "cookie": "^0.4.1",
     "eva-icons": "^1.1.2",
     "graphql": "^15.0.0",
-    "graphql-config": "^3.2.0",
     "ngx-build-plus": "11.0.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
@@ -38,10 +39,10 @@
     "@angular-devkit/build-angular": "~0.1102.13",
     "@angular/cli": "~11.2.13",
     "@angular/compiler-cli": "~11.2.14",
-    "@graphql-codegen/cli": "^1.21.4",
     "@schematics/angular": "~11.2.13",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
+    "apollo": "^2.33.2",
     "codelyzer": "^6.0.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
