@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --hmr --plugin build-plugin.js",
-    "build": "ng build --plugin build-plugin.js",
+    "start": "ng serve --hmr --plugin ~build-plugin.js",
+    "build": "ng build --plugin ~build-plugin.js",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
