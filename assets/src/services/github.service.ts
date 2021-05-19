@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
-import { Gists } from './__generated__/Gists';
+import { Gists, GistsVariables } from './__generated__/Gists';
 import { Me } from './__generated__/Me';
 
 @Injectable()
@@ -23,8 +23,8 @@ export class GithubService {
     });
   }
 
-  getGists(cursor: string | undefined, count = 10) {
-    return this.apollo.query<Gists>({
+  getGists() {
+    return this.apollo.watchQuery<Gists, GistsVariables>({
       query: gql`
         query Gists($count: Int!, $cursor: String) {
           viewer {
@@ -50,8 +50,7 @@ export class GithubService {
         }
       `,
       variables: {
-        cursor,
-        count,
+        count: 10,
       },
     });
   }

@@ -6,6 +6,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { CompoundComponent } from '../components/compound.component';
 import { IndexComponent } from '../components/index.component';
 import { GithubService } from '../services/github.service';
@@ -27,6 +28,7 @@ import { GraphQLModule } from './graphql.module';
     NzDividerModule,
     NzListModule,
     NzSpaceModule,
+    NzTabsModule,
   ],
   providers: [GithubService, UserService],
   bootstrap: [AppComponent],
