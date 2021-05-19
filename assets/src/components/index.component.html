@@ -1,1 +1,25 @@
-<button nz-button nzType="primary">Primary Button</button>
+<div class="container">
+  <nz-list class="list">
+    <nz-list-item class="item" *ngFor="let item of list" (click)="selectedId = item.id">
+      {{getGistName(item)}}
+    </nz-list-item>
+  </nz-list>
+  <nz-divider class="divider" nzType="vertical"></nz-divider>
+  <nz-list class="list">
+    <nz-list-item class="item" *ngFor="let file of files">
+      {{file.name}}
+    </nz-list-item>
+  </nz-list>
+  <nz-divider class="divider" nzType="vertical"></nz-divider>
+  <div class="actions">
+    <button nz-button nzType="primary">
+      <app-compound title="Create Empty" detail="Create an empty file in current gist"></app-compound>
+    </button>
+    <button nz-button nzType="primary">
+      <app-compound title="Open" detail="Open current file"></app-compound>
+    </button>
+    <button nz-button nzType="primary">
+      <app-compound title="Copy" detail="Create an new file based on current file"></app-compound>
+    </button>
+  </div>
+</div>

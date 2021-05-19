@@ -18,7 +18,7 @@ if (!token) {
 export class UserService {
   private token: string | undefined = undefined;
 
-  public getToken(): string | undefined {
+  getToken(): string | undefined {
     if (!this.token) {
       this.token = getToken();
     }
