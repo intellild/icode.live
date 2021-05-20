@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Octokit } from '@octokit/rest';
+import type { Octokit } from '@octokit/rest';
 import { Apollo, gql } from 'apollo-angular';
 import { keyBy } from 'lodash-es';
 import { Gists, Gists_viewer_gists_nodes, Gists_viewer_gists_nodes_files, GistsVariables } from './__generated__/Gists';
@@ -8,9 +8,7 @@ import { token } from './user.service';
 
 @Injectable()
 export class GithubService {
-  private readonly octokit = new Octokit({
-    auth: token,
-  });
+  private octokit: Octokit | null = null;
 
   constructor(private readonly apollo: Apollo) {}
 
@@ -75,9 +73,23 @@ export class GithubService {
       content: file.text,
       encoding: file.encoding,
     }));
-    return this.octokit.gists.create({
-      description: '',
-      files: files ? (keyBy(files, (file) => file.filename) as Record<string, any>) : {},
+    return this.getOctokit().then((octokit) =>
+      octokit.gists.create({
+        description: '',
+        files: files ? (keyBy(files, (file) => file.filename) as Record<string, any>) : {},
+      }),
+    );
+  }
+
+  private getOctokit() {
+    if (this.octokit) {
+      return Promise.resolve(this.octokit);
+    }
+    return import('@octokit/rest').then(({ Octokit }) => {
+      this.octokit = new Octokit({
+        auth: token,
+      });
+      return this.octokit;
     });
   }
 }
