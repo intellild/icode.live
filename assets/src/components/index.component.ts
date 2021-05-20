@@ -1,4 +1,4 @@
-import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { QueryRef } from 'apollo-angular';
 import { BehaviorSubject, combineLatest, Observable, pairs, Subscription } from 'rxjs';
@@ -10,6 +10,7 @@ import {
   GistsVariables,
 } from '../services/__generated__/Gists';
 import { GithubService } from '../services/github.service';
+import { ServerService } from '../services/server.service';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -17,7 +18,7 @@ import { UserService } from '../services/user.service';
   templateUrl: `./index.component.html`,
   styleUrls: ['./index.component.scss'],
 })
-export class IndexComponent implements OnDestroy {
+export class IndexComponent implements AfterViewInit, OnDestroy {
   @ViewChild('loginTemplate', { read: TemplateRef }) loginTemplateRef!: TemplateRef<unknown>;
 
   readonly $$: Subscription[] = [];
@@ -32,6 +33,7 @@ export class IndexComponent implements OnDestroy {
     private readonly userService: UserService,
     private readonly githubService: GithubService,
     private readonly router: Router,
+    private readonly serverService: ServerService,
   ) {
     this.query = githubService.getGists();
     const value$ = this.query.valueChanges;
@@ -90,6 +92,10 @@ export class IndexComponent implements OnDestroy {
     this.githubService.forkGist(gist).then(() => {
       this.router.navigate(['/channel']);
     });
+  }
+
+  ngAfterViewInit() {
+    this.serverService.connect();
   }
 
   ngOnDestroy() {

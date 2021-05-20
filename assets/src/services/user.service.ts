@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import cookie from 'cookie';
+import { GithubService } from './github.service';
 
 const KEY = 'github_token';
 
@@ -18,10 +19,9 @@ if (!token) {
 export class UserService {
   private token: string | undefined = undefined;
 
-  getToken(): string | undefined {
-    if (!this.token) {
-      this.token = getToken();
-    }
-    return this.token;
+  constructor(private readonly githubService: GithubService) {}
+
+  getMe() {
+    return this.githubService.getMe();
   }
 }
