@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ChannelComponent } from '../components/channel.component';
+import { EditorDirective } from '../components/editor.directive';
 
 const routes: Routes = [
   {
@@ -10,7 +11,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [ChannelComponent],
+  declarations: [ChannelComponent, EditorDirective],
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })

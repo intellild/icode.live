@@ -78,6 +78,10 @@ export class IndexComponent implements OnDestroy {
     });
   }
 
+  open() {
+    this.router.navigate(['/channel']);
+  }
+
   fork() {
     const gist = this.selectedGist$.getValue();
     if (!gist) {
