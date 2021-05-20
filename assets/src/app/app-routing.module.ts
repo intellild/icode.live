@@ -7,6 +7,10 @@ const routes: Routes = [
     path: '',
     component: IndexComponent,
   },
+  {
+    path: 'channel',
+    loadChildren: () => import('./channel.module').then((m) => m.ChannelModule),
+  },
 ];
 
 @NgModule({

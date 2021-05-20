@@ -1,4 +1,5 @@
 import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { QueryRef } from 'apollo-angular';
 import { BehaviorSubject, combineLatest, Observable, pairs, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, pairwise, share } from 'rxjs/operators';
@@ -22,13 +23,16 @@ export class IndexComponent implements OnDestroy {
   readonly $$: Subscription[] = [];
   readonly query: QueryRef<Gists, GistsVariables>;
   readonly selectedId$ = new BehaviorSubject<string | null>(null);
-  readonly selectedFileName$ = new BehaviorSubject<string | null>(null);
   readonly list$: Observable<Gists_viewer_gists_nodes[]>;
-  readonly selectedGist$: Observable<Gists_viewer_gists_nodes | null | undefined>;
+  readonly selectedGist$ = new BehaviorSubject<Gists_viewer_gists_nodes | null | undefined>(null);
   readonly files$: Observable<Gists_viewer_gists_nodes_files[]>;
   readonly loading$: Observable<boolean>;
 
-  constructor(private readonly userService: UserService, private readonly githubService: GithubService) {
+  constructor(
+    private readonly userService: UserService,
+    private readonly githubService: GithubService,
+    private readonly router: Router,
+  ) {
     this.query = githubService.getGists();
     const value$ = this.query.valueChanges;
     this.list$ = value$.pipe(
@@ -44,28 +48,17 @@ export class IndexComponent implements OnDestroy {
         return;
       }
       this.selectedId$.next(id);
-      this.selectedFileName$.next(null);
     });
     this.$$.push($list);
-    this.selectedGist$ = combineLatest([this.list$.pipe(distinctUntilChanged()), this.selectedId$]).pipe(
-      map(([list, selectedId]) => list.find((item) => item.id === selectedId)),
-      distinctUntilChanged(),
-      share(),
-    );
+    const $selectedGist = combineLatest([this.list$.pipe(distinctUntilChanged()), this.selectedId$])
+      .pipe(map(([list, selectedId]) => list.find((item) => item.id === selectedId)))
+      .subscribe(this.selectedGist$);
+    this.$$.push($selectedGist);
     this.files$ = this.selectedGist$.pipe(
       map((gist) => (gist?.files?.filter((file) => !!file) as Gists_viewer_gists_nodes_files[]) ?? []),
       share(),
     );
     this.loading$ = value$.pipe(map((value) => value.loading));
-    const $fileName = this.selectedGist$.pipe(pairwise()).subscribe(([prev, current]) => {
-      if (prev?.id !== current?.id) {
-        this.selectedFileName$.next(null);
-      }
-      if (!current?.files?.find((file) => file?.name === this.selectedFileName$.getValue())) {
-        this.selectedFileName$.next(null);
-      }
-    });
-    this.$$.push($fileName);
   }
 
   getGistName(gist: Gists_viewer_gists_nodes) {
@@ -82,6 +75,16 @@ export class IndexComponent implements OnDestroy {
         cursor,
         count: 10,
       },
+    });
+  }
+
+  fork() {
+    const gist = this.selectedGist$.getValue();
+    if (!gist) {
+      return;
+    }
+    this.githubService.forkGist(gist).then(() => {
+      this.router.navigate(['/channel']);
     });
   }
 

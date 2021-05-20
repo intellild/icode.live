@@ -1,10 +1,17 @@
 import { Injectable } from '@angular/core';
+import { Octokit } from '@octokit/rest';
 import { Apollo, gql } from 'apollo-angular';
-import { Gists, GistsVariables } from './__generated__/Gists';
+import { keyBy } from 'lodash-es';
+import { Gists, Gists_viewer_gists_nodes, Gists_viewer_gists_nodes_files, GistsVariables } from './__generated__/Gists';
 import { Me } from './__generated__/Me';
+import { token } from './user.service';
 
 @Injectable()
 export class GithubService {
+  private readonly octokit = new Octokit({
+    auth: token,
+  });
+
   constructor(private readonly apollo: Apollo) {}
 
   getMe() {
@@ -32,6 +39,8 @@ export class GithubService {
               nodes {
                 id
                 name
+                url
+                description
                 files {
                   encodedName
                   encoding
@@ -39,6 +48,10 @@ export class GithubService {
                   name
                   size
                   text
+                  language {
+                    color
+                    name
+                  }
                 }
               }
               pageInfo {
@@ -52,6 +65,19 @@ export class GithubService {
       variables: {
         count: 10,
       },
+    });
+  }
+
+  forkGist(gist: Gists_viewer_gists_nodes) {
+    const files = (gist.files?.filter((file) => !!file) as Gists_viewer_gists_nodes_files[]).map((file) => ({
+      filename: file.name,
+      language: file.language?.name,
+      content: file.text,
+      encoding: file.encoding,
+    }));
+    return this.octokit.gists.create({
+      description: '',
+      files: files ? (keyBy(files, (file) => file.filename) as Record<string, any>) : {},
     });
   }
 }

@@ -5,32 +5,27 @@
       <nz-list class="list" [nzLoading]="loading$ | async">
         <nz-list-item
           class="item"
-          [class.selected]="item.id === (selectedId$ | async)"
           *ngFor="let item of list$ | async"
+          [class.selected]="item.id === (selectedId$ | async)"
           (click)="selectedId$.next(item.id)"
         >
           {{ getGistName(item) }}
         </nz-list-item>
       </nz-list>
       <nz-list class="list">
-        <nz-list-item
-          class="item"
-          [class.selected]="file.name === (selectedFileName$ | async)"
-          *ngFor="let file of files$ | async"
-          (click)="selectedFileName$.next(file.name)"
-        >
+        <nz-list-item class="item" *ngFor="let file of files$ | async">
           {{ file.name }}
         </nz-list-item>
       </nz-list>
       <div class="actions">
         <button nz-button nzType="primary">
-          <app-compound title="Create Empty" detail="Create an empty file in current gist"></app-compound>
+          <app-compound title="Create Empty" detail="Create an new Gist with an empty file"></app-compound>
         </button>
         <button nz-button nzType="primary">
-          <app-compound title="Open" detail="Open current file"></app-compound>
+          <app-compound title="Open" detail="Open current Gist"></app-compound>
         </button>
         <button nz-button nzType="primary">
-          <app-compound title="Copy" detail="Create an new file based on current file"></app-compound>
+          <app-compound title="Fork" detail="Fork the Gist" (click)="fork()"></app-compound>
         </button>
       </div>
     </div>
