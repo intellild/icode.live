@@ -1,0 +1,7 @@
+message Message {
+  required string topic = 1;
+  required string event = 2;
+  required bytes payload = 3;
+  required string ref = 4;
+  required string joinRef = 5;
+}
