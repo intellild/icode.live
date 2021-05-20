@@ -36,3 +36,4 @@ npm-debug.log
 .idea
 
 config/dev.config.exs
+icode.iml
