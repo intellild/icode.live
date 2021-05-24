@@ -33,7 +33,7 @@ export class GithubService {
       query: gql`
         query Gists($count: Int!, $cursor: String) {
           viewer {
-            gists(first: $count, after: $cursor) {
+            gists(first: $count, after: $cursor, privacy: ALL) {
               nodes {
                 id
                 name

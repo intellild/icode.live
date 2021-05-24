@@ -1,0 +1,13 @@
+:host {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template:
+    'tabs toolbar' 40px
+    'editor console' 1fr;
+  grid-template-columns: 1fr 38.2%;
+}
+
+.editor {
+  grid-area: editor;
+}

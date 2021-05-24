@@ -9,6 +9,7 @@ import {
   Gists_viewer_gists_nodes_files,
   GistsVariables,
 } from '../services/__generated__/Gists';
+import { CodeService } from '../services/code.service';
 import { GithubService } from '../services/github.service';
 import { ServerService } from '../services/server.service';
 import { UserService } from '../services/user.service';
@@ -26,7 +27,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
   readonly selectedId$ = new BehaviorSubject<string | null>(null);
   readonly list$: Observable<Gists_viewer_gists_nodes[]>;
   readonly selectedGist$ = new BehaviorSubject<Gists_viewer_gists_nodes | null | undefined>(null);
-  readonly files$: Observable<Gists_viewer_gists_nodes_files[]>;
+  readonly files$ = new BehaviorSubject<Gists_viewer_gists_nodes_files[]>([]);
   readonly loading$: Observable<boolean>;
 
   constructor(
@@ -34,6 +35,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
     private readonly githubService: GithubService,
     private readonly router: Router,
     private readonly serverService: ServerService,
+    private readonly codeService: CodeService,
   ) {
     this.query = githubService.getGists();
     const value$ = this.query.valueChanges;
@@ -56,10 +58,10 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
       .pipe(map(([list, selectedId]) => list.find((item) => item.id === selectedId)))
       .subscribe(this.selectedGist$);
     this.$$.push($selectedGist);
-    this.files$ = this.selectedGist$.pipe(
-      map((gist) => (gist?.files?.filter((file) => !!file) as Gists_viewer_gists_nodes_files[]) ?? []),
-      share(),
-    );
+    const $files = this.selectedGist$
+      .pipe(map((gist) => (gist?.files?.filter((file) => !!file) as Gists_viewer_gists_nodes_files[]) ?? []))
+      .subscribe(this.files$);
+    this.$$.push($files);
     this.loading$ = value$.pipe(map((value) => value.loading));
   }
 
@@ -81,6 +83,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
   }
 
   open() {
+    this.setFiles();
     this.router.navigate(['/channel']);
   }
 
@@ -90,6 +93,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
       return;
     }
     this.githubService.forkGist(gist).then(() => {
+      this.setFiles();
       this.router.navigate(['/channel']);
     });
   }
@@ -100,5 +104,9 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.$$.forEach(($) => $.unsubscribe());
+  }
+
+  private setFiles() {
+    this.codeService.files = this.files$.getValue();
   }
 }

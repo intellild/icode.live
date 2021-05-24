@@ -1,5 +1,5 @@
 defmodule IcodeWeb.UserChannel do
-  user Phoenix.Channel
+  use Phoenix.Channel
 
   @impl true
   def join("user:" <> user_id, _payload, socket) do
