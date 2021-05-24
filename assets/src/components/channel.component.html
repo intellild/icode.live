@@ -1,4 +1,4 @@
-<nz-tabset nzType="card" [nzSelectedIndex]="tabIndex$ | async" (nzSelectedIndexChange)="tabIndex$.next($event)">
+<nz-tabset class="tabs" nzType="card" [nzSelectedIndex]="tabIndex$ | async" (nzSelectedIndexChange)="tabIndex$.next($event)">
   <nz-tab *ngFor="let file of files" [nzTitle]="file.name"></nz-tab>
 </nz-tabset>
 <div class="editor" monaco-editor [model$]="model$"></div>

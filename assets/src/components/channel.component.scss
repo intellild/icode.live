@@ -8,6 +8,15 @@
   grid-template-columns: 1fr 38.2%;
 }
 
+.tabs {
+  grid-area: tabs;
+}
+
+:host ::ng-deep .ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab-active {
+  background-color: #1e1e1e;
+  border-bottom-color: #1e1e1e;
+}
+
 .editor {
   grid-area: editor;
 }
