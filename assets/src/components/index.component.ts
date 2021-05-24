@@ -107,6 +107,6 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
   }
 
   private setFiles() {
-    this.codeService.files = this.files$.getValue();
+    this.codeService.setFiles(this.files$.getValue());
   }
 }
