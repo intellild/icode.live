@@ -10,7 +10,6 @@ import { IndexComponent } from '../components/index.component';
 import { CodeService } from '../services/code.service';
 import { GithubService } from '../services/github.service';
 import { ServerService } from '../services/server.service';
-import { UserService } from '../services/user.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,7 +27,7 @@ import { GraphQLModule } from './graphql.module';
     NzListModule,
     NzTabsModule,
   ],
-  providers: [CodeService, GithubService, ServerService, UserService],
+  providers: [CodeService, GithubService, ServerService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, TemplateRef, ViewChild } from '@an
 import { Router } from '@angular/router';
 import { QueryRef } from 'apollo-angular';
 import { BehaviorSubject, combineLatest, Observable, pairs, Subscription } from 'rxjs';
-import { distinctUntilChanged, map, pairwise, share } from 'rxjs/operators';
+import { distinctUntilChanged, map, share } from 'rxjs/operators';
 import {
   Gists,
   Gists_viewer_gists_nodes,
@@ -12,7 +12,7 @@ import {
 import { CodeService } from '../services/code.service';
 import { GithubService } from '../services/github.service';
 import { ServerService } from '../services/server.service';
-import { UserService } from '../services/user.service';
+import { notNull } from '../utils/not-null';
 
 @Component({
   selector: 'app-index',
@@ -31,7 +31,6 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
   readonly loading$: Observable<boolean>;
 
   constructor(
-    private readonly userService: UserService,
     private readonly githubService: GithubService,
     private readonly router: Router,
     private readonly serverService: ServerService,
@@ -40,7 +39,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
     this.query = githubService.getGists();
     const value$ = this.query.valueChanges;
     this.list$ = value$.pipe(
-      map((value) => (value.data.viewer.gists.nodes?.filter((item) => !!item) as Gists_viewer_gists_nodes[]) ?? []),
+      map((value) => value.data.viewer.gists.nodes?.filter(notNull) ?? []),
       share(),
     );
     const $list = this.list$.subscribe((list) => {
@@ -58,9 +57,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
       .pipe(map(([list, selectedId]) => list.find((item) => item.id === selectedId)))
       .subscribe(this.selectedGist$);
     this.$$.push($selectedGist);
-    const $files = this.selectedGist$
-      .pipe(map((gist) => (gist?.files?.filter((file) => !!file) as Gists_viewer_gists_nodes_files[]) ?? []))
-      .subscribe(this.files$);
+    const $files = this.selectedGist$.pipe(map((gist) => gist?.files?.filter(notNull) ?? [])).subscribe(this.files$);
     this.$$.push($files);
     this.loading$ = value$.pipe(map((value) => value.loading));
   }
@@ -83,8 +80,20 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
   }
 
   open() {
-    this.setFiles();
-    this.router.navigate(['/channel']);
+    const gist = this.selectedGist$.getValue();
+    if (!gist) {
+      return;
+    }
+    this.githubService
+      .getMe()
+      .result()
+      .then((me) => {
+        this.router.navigate(['/channel', me.data.viewer.login], {
+          queryParams: {
+            gist: gist.name,
+          },
+        });
+      });
   }
 
   fork() {
@@ -92,9 +101,14 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
     if (!gist) {
       return;
     }
-    this.githubService.forkGist(gist).then(() => {
-      this.setFiles();
-      this.router.navigate(['/channel']);
+    Promise.all([this.githubService.getMe().result(), this.githubService.forkGist(gist)]).then(([me, newGist]) => {
+      const { login } = me.data.viewer;
+      const { id } = newGist.data;
+      return this.router.navigate(['/channel', login], {
+        queryParams: {
+          gist: id,
+        },
+      });
     });
   }
 
@@ -104,9 +118,5 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.$$.forEach(($) => $.unsubscribe());
-  }
-
-  private setFiles() {
-    this.codeService.setFiles(this.files$.getValue());
   }
 }

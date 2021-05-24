@@ -7,7 +7,7 @@ import { EditorDirective } from '../components/editor.directive';
 
 const routes: Routes = [
   {
-    path: '',
+    path: ':owner',
     component: ChannelComponent,
   },
 ];

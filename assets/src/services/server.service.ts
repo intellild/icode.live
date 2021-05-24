@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Socket } from 'phoenix';
 import { environment } from '../environments/environment';
-import { token, UserService } from './user.service';
+import { token } from './github.service';
 
 function getUrl() {
   const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
@@ -20,7 +20,7 @@ export class ServerService {
     },
   });
 
-  constructor(private readonly userService: UserService) {
+  constructor() {
     this.socket.onOpen(this.onOpen);
     this.socket.onError(this.onError);
   }
