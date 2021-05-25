@@ -4,7 +4,7 @@ import { Apollo, gql } from 'apollo-angular';
 import cookie from 'cookie';
 import { keyBy } from 'lodash-es';
 import { notNull } from '../utils/not-null';
-import { Gist, GistVariables } from './__generated__/Gist';
+import { Gist, Gist_viewer_gist, GistVariables } from './__generated__/Gist';
 import { Gists, Gists_viewer_gists_nodes, Gists_viewer_gists_nodes_files, GistsVariables } from './__generated__/Gists';
 import { Me } from './__generated__/Me';
 
@@ -104,23 +104,35 @@ export class GithubService {
     );
   }
 
-  getGist(name: string) {
-    return this.apollo.query<Gist, GistVariables>({
-      query: gql`
-        ${GIST_FIELDS}
-        query Gist($name: String!) {
-          viewer {
-            id
-            gist(name: $name) {
-              ...gistFields
+  getGist(name: string, id: string | undefined | null): Promise<Gist_viewer_gist | null> {
+    if (id) {
+      const cache = this.apollo.client.readFragment<Gist_viewer_gist>({
+        id: `Gist:${id}`,
+        fragment: GIST_FIELDS,
+      });
+      if (cache) {
+        return Promise.resolve(cache);
+      }
+    }
+    return this.apollo
+      .query<Gist, GistVariables>({
+        query: gql`
+          ${GIST_FIELDS}
+          query Gist($name: String!) {
+            viewer {
+              id
+              gist(name: $name) {
+                ...gistFields
+              }
             }
           }
-        }
-      `,
-      variables: {
-        name,
-      },
-    });
+        `,
+        variables: {
+          name,
+        },
+      })
+      .toPromise()
+      .then((query) => query.data.viewer.gist);
   }
 
   private getOctokit() {

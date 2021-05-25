@@ -1,0 +1,17 @@
+<div class="container">
+  <i class="icon" nz-icon nzType="close-circle" nzTheme="outline"></i>
+  <div class="message">
+    {{ message }}
+  </div>
+  <div class="action" [ngSwitch]="error.type">
+    <button
+      *ngSwitchCase="error.type === ErrorCode.ChannelUserReject || error.type === ErrorCode.ChannelNotFound ? error.type : null"
+      nz-button
+      nzType="primary"
+      (click)="errorAction()"
+    >
+      Retry
+    </button>
+    <ng-container *ngSwitchDefault></ng-container>
+  </div>
+</div>

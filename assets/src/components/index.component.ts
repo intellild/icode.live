@@ -91,6 +91,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
         this.router.navigate(['/channel', me.data.viewer.login], {
           queryParams: {
             gist: gist.name,
+            cache_id: gist.id,
           },
         });
       });
@@ -107,6 +108,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
       return this.router.navigate(['/channel', login], {
         queryParams: {
           gist: id,
+          cache_id: gist.id,
         },
       });
     });

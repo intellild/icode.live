@@ -38,7 +38,7 @@ export class ChannelComponent implements AfterViewInit, OnDestroy {
   gist: Gist_viewer_gist | null = null;
   files: File[] = [];
 
-  constructor(private readonly githubService: GithubService, private readonly activatedRoute: ActivatedRoute) {}
+  constructor(private readonly githubService: GithubService, private readonly route: ActivatedRoute) {}
 
   ngAfterViewInit() {
     const $tabIndex = this.tabIndex$.subscribe((tabIndex) => {
@@ -48,7 +48,7 @@ export class ChannelComponent implements AfterViewInit, OnDestroy {
       }
     });
     this.$$.push($tabIndex);
-    const { owner } = this.activatedRoute.snapshot.params;
+    const { owner } = this.route.snapshot.params;
     if (!owner) {
       // @TODO error
       return;
@@ -68,21 +68,17 @@ export class ChannelComponent implements AfterViewInit, OnDestroy {
   }
 
   private fetchGist() {
-    const gistName = this.activatedRoute.snapshot.queryParamMap.get('gist');
-    if (!gistName) {
+    const { gist, cache_id } = this.route.snapshot.queryParams;
+    if (!gist) {
       // @TODO error
       return;
     }
-    this.githubService
-      .getGist(gistName)
-      .toPromise()
-      .then((gist) => {
-        this.files =
-          gist.data.viewer.gist?.files
-            ?.filter(notNull)
-            .map(
-              (file) => new File(file.name ?? '', file.text ?? '', file.language?.name ?? '', file.language?.color),
-            ) ?? [];
-      });
+    this.githubService.getGist(gist, cache_id).then((gist) => {
+      this.files =
+        gist?.files
+          ?.filter(notNull)
+          .map((file) => new File(file.name ?? '', file.text ?? '', file.language?.name ?? '', file.language?.color)) ??
+        [];
+    });
   }
 }

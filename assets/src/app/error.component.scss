@@ -1,0 +1,36 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  display: grid;
+  grid-template:
+    'icon message' minmax(40px, auto)
+    'action action' 40px;
+  grid-template-columns: 40px auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  grid-area: icon;
+  color: #ff4d4f;
+  font-size: 22px;
+}
+
+.message {
+  grid-area: message;
+  padding-left: 10px;
+}
+
+.action {
+  grid-area: action;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 50px;
+}
