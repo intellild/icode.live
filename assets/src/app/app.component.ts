@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
+import { ConnectionService } from '../services/connection';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,12 @@ import { Component } from '@angular/core';
     `,
   ],
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   title = 'show-me-the-code';
+
+  constructor(private readonly connectionService: ConnectionService) {}
+
+  ngAfterViewInit() {
+    this.connectionService.initialize();
+  }
 }

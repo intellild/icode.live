@@ -10,9 +10,8 @@ import {
   Gists_viewer_gists_nodes_files,
   GistsVariables,
 } from '../services/__generated__/Gists';
-import { CodeService } from '../services/code.service';
+import { ConnectionService } from '../services/connection';
 import { GithubService } from '../services/github.service';
-import { ServerService } from '../services/server.service';
 import { notNull } from '../utils/not-null';
 
 @Component({
@@ -20,7 +19,7 @@ import { notNull } from '../utils/not-null';
   templateUrl: `./index.component.html`,
   styleUrls: ['./index.component.scss'],
 })
-export class IndexComponent implements AfterViewInit, OnDestroy {
+export class IndexComponent implements OnDestroy {
   @ViewChild('loginTemplate', { read: TemplateRef }) loginTemplateRef!: TemplateRef<unknown>;
 
   readonly $$: Subscription[] = [];
@@ -34,8 +33,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
   constructor(
     private readonly githubService: GithubService,
     private readonly router: Router,
-    private readonly serverService: ServerService,
-    private readonly codeService: CodeService,
+    private readonly connectionService: ConnectionService,
   ) {
     this.query = githubService.getGists();
     const value$ = this.query.valueChanges;
@@ -113,10 +111,6 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
         },
       });
     });
-  }
-
-  ngAfterViewInit() {
-    this.serverService.connect();
   }
 
   ngOnDestroy() {

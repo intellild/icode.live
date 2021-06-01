@@ -22,7 +22,7 @@ defmodule IcodeWeb.UserSocket do
     else
       client = Tentacat.Client.new(%{access_token: token})
       case Tentacat.Users.me(client) do
-        {200, %{"id" => user_id}, _} -> {:ok, assign(socket, :user_id, user_id)}
+        {200, %{"login" => user_login}, _} -> {:ok, assign(socket, :user_login, user_login)}
         {_, %{"message" => message}, _} -> {:error, message}
         _ -> {:error, "unknown"}
       end
@@ -41,5 +41,5 @@ defmodule IcodeWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   @impl true
-  def id(socket), do: "user_socket:#{socket.assigns.user_id}"
+  def id(socket), do: "user_socket:#{socket.assigns.user_login}"
 end

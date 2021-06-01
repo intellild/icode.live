@@ -4,6 +4,7 @@ import * as monaco from 'monaco-editor';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { GIST_CACHE_KEY } from '../constants';
 import { Gist_viewer_gist } from '../services/__generated__/Gist';
+import { ChannelService } from '../services/channel.service';
 import { GithubService } from '../services/github.service';
 import { notNull } from '../utils/not-null';
 
@@ -30,6 +31,7 @@ class File {
   selector: 'app-channel',
   templateUrl: './channel.component.html',
   styleUrls: ['./channel.component.scss'],
+  providers: [ChannelService],
 })
 export class ChannelComponent implements AfterViewInit, OnDestroy {
   readonly $$: Subscription[] = [];
