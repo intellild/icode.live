@@ -2,3 +2,7 @@
   <nz-tab *ngFor="let file of files" [nzTitle]="file.name"></nz-tab>
 </nz-tabset>
 <div class="editor" monaco-editor [model$]="model$"></div>
+<div class="spinner" *ngIf="spin$ | async">
+  <ng-template #indicatorTemplate><i nz-icon nzType="loading"></i></ng-template>
+  <nz-spin nzSimple [nzIndicator]="indicatorTemplate"> </nz-spin>
+</div>

@@ -2,7 +2,8 @@ defmodule IcodeWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", IcodeWeb.RoomChannel
+  channel "user:*", IcodeWeb.UserChannel
+  channel "code:*", IcodeWeb.CodeChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

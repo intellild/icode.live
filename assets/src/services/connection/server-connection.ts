@@ -12,7 +12,7 @@ function getUrl() {
     : `${protocol}://${location.hostname}:4000/socket`;
 }
 
-export enum ConnectionState {
+export enum ServerConnectionState {
   Connecting = 'connecting',
   Authorizing = 'authorizing',
   Connected = 'connected',
@@ -30,28 +30,45 @@ export class ServerConnection {
 
   readonly userChannel: Channel;
 
-  readonly state$ = new BehaviorSubject<ConnectionState>(ConnectionState.Connecting);
+  readonly state$ = new BehaviorSubject<ServerConnectionState>(ServerConnectionState.Connecting);
   readonly error$ = new Subject<unknown>();
 
   private lastError: unknown | null = null;
 
   constructor(user: Me_viewer) {
     this.userChannel = this.socket.channel(`user:${user.login}`);
-    this.socket.onOpen(() => this.state$.next(ConnectionState.Authorizing));
+    this.socket.onOpen(() => this.state$.next(ServerConnectionState.Authorizing));
     this.socket.onError((error) => {
       this.lastError = error;
       this.error$.next(error);
-      this.state$.next(ConnectionState.Connecting);
+      this.state$.next(ServerConnectionState.Connecting);
     });
     this.userChannel.onError((reason) => {
-      this.state$.next(ConnectionState.Unauthorized);
+      this.state$.next(ServerConnectionState.Unauthorized);
       this.lastError = reason;
       this.error$.next(reason);
     });
+    this.userChannel
+      .join()
+      .receive('ok', () => {
+        this.state$.next(ServerConnectionState.Connected);
+        this.lastError = null;
+      })
+      .receive('error', (reason) => {
+        this.state$.next(ServerConnectionState.Unauthorized);
+        this.lastError = reason;
+        this.error$.next(reason);
+        this.userChannel.leave();
+      });
     this.socket.connect();
   }
 
   getLastError(): unknown {
     return this.lastError;
+  }
+
+  destroy() {
+    this.userChannel.leave();
+    this.socket.disconnect();
   }
 }

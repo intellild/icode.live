@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as monaco from 'monaco-editor';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { debounceTime, map } from 'rxjs/operators';
 import { GIST_CACHE_KEY } from '../constants';
 import { Gist_viewer_gist } from '../services/__generated__/Gist';
 import { ChannelService } from '../services/channel.service';
@@ -35,12 +36,17 @@ class File {
 })
 export class ChannelComponent implements AfterViewInit, OnDestroy {
   readonly $$: Subscription[] = [];
-  model$ = new BehaviorSubject<monaco.editor.ITextModel | null>(null);
-  tabIndex$ = new BehaviorSubject(0);
+  readonly model$ = new BehaviorSubject<monaco.editor.ITextModel | null>(null);
+  readonly tabIndex$ = new BehaviorSubject(0);
+  readonly spin$ = new BehaviorSubject(false);
   gist: Gist_viewer_gist | null = null;
   files: File[] = [];
 
-  constructor(private readonly githubService: GithubService, private readonly route: ActivatedRoute) {}
+  constructor(
+    private readonly githubService: GithubService,
+    private readonly route: ActivatedRoute,
+    private readonly channelService: ChannelService,
+  ) {}
 
   ngAfterViewInit() {
     const $tabIndex = this.tabIndex$.subscribe((tabIndex) => {
@@ -50,19 +56,15 @@ export class ChannelComponent implements AfterViewInit, OnDestroy {
       }
     });
     this.$$.push($tabIndex);
-    const { owner } = this.route.snapshot.params;
-    if (!owner) {
-      // @TODO error
-      return;
-    }
-    this.githubService
-      .getMe()
-      .result()
-      .then((me) => {
-        if (me.data.viewer.login === owner) {
-          this.fetchGist();
-        }
-      });
+    const $spin = this.channelService.connected$
+      .pipe(
+        map((connected) => !connected),
+        debounceTime(0), // prevent "Expression has changed after it was checked"
+      )
+      .subscribe(this.spin$);
+    this.$$.push($spin);
+    this.connect();
+    this.fetchGist();
   }
 
   ngOnDestroy() {
@@ -83,5 +85,13 @@ export class ChannelComponent implements AfterViewInit, OnDestroy {
           .map((file) => new File(file.name ?? '', file.text ?? '', file.language?.name ?? '', file.language?.color)) ??
         [];
     });
+  }
+
+  private connect() {
+    const { channel } = this.route.snapshot.params;
+    if (!channel) {
+      return;
+    }
+    this.channelService.connect(channel);
   }
 }
