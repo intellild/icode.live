@@ -2,8 +2,8 @@ import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as monaco from 'monaco-editor';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { Gist_viewer_gist, Gist_viewer_gist_files } from '../services/__generated__/Gist';
-import { CodeService } from '../services/code.service';
+import { GIST_CACHE_KEY } from '../constants';
+import { Gist_viewer_gist } from '../services/__generated__/Gist';
 import { GithubService } from '../services/github.service';
 import { notNull } from '../utils/not-null';
 
@@ -68,12 +68,13 @@ export class ChannelComponent implements AfterViewInit, OnDestroy {
   }
 
   private fetchGist() {
-    const { gist, cache_id } = this.route.snapshot.queryParams;
+    const { gist } = this.route.snapshot.queryParams;
     if (!gist) {
       // @TODO error
       return;
     }
-    this.githubService.getGist(gist, cache_id).then((gist) => {
+    const cacheId = sessionStorage.getItem(GIST_CACHE_KEY);
+    this.githubService.getGist(gist, cacheId).then((gist) => {
       this.files =
         gist?.files
           ?.filter(notNull)

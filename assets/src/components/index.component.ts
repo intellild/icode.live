@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { QueryRef } from 'apollo-angular';
 import { BehaviorSubject, combineLatest, Observable, pairs, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, share } from 'rxjs/operators';
+import { GIST_CACHE_KEY } from '../constants';
 import {
   Gists,
   Gists_viewer_gists_nodes,
@@ -84,6 +85,7 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
     if (!gist) {
       return;
     }
+    sessionStorage.setItem(GIST_CACHE_KEY, gist.id);
     this.githubService
       .getMe()
       .result()
@@ -91,7 +93,6 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
         this.router.navigate(['/channel', me.data.viewer.login], {
           queryParams: {
             gist: gist.name,
-            cache_id: gist.id,
           },
         });
       });
@@ -105,10 +106,10 @@ export class IndexComponent implements AfterViewInit, OnDestroy {
     Promise.all([this.githubService.getMe().result(), this.githubService.forkGist(gist)]).then(([me, newGist]) => {
       const { login } = me.data.viewer;
       const { id } = newGist.data;
+      sessionStorage.setItem(GIST_CACHE_KEY, id ?? '');
       return this.router.navigate(['/channel', login], {
         queryParams: {
           gist: id,
-          cache_id: gist.id,
         },
       });
     });
