@@ -1,9 +1,14 @@
 <nz-tabset class="tabs">
   <nz-tab nzTitle="Join a Channel">
-
+    <nz-input-group nzSize="large" nzSearch nzAddOnBefore="Channel Name" [nzAddOnAfter]="submit">
+      <input type="text" nz-input [(ngModel)]="joinChannelViewModel.input" />
+    </nz-input-group>
+    <ng-template #submit>
+      <button nz-button nzType="primary" nzSearch (click)="joinChannelViewModel.onSubmit()">Submit</button>
+    </ng-template>
   </nz-tab>
   <nz-tab nzTitle="Create New Channel">
-    <div class="container">
+    <div class="new-channel">
       <nz-list class="list" [nzLoading]="newChannelViewModel.loading$ | async">
         <nz-list-item
           class="item"

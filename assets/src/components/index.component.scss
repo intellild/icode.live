@@ -12,12 +12,16 @@
   height: 80%;
 }
 
-.container {
+.new-channel {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   height: 60vh;
   overflow: hidden;
+
+  button[nz-button] {
+    height: fit-content;
+  }
 }
 
 .list {
@@ -42,10 +46,6 @@
 
 .divider {
   height: 100%;
-}
-
-button[nz-button] {
-  height: fit-content;
 }
 
 .actions {
