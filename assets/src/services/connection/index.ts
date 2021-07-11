@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Channel } from 'phoenix';
 import { BehaviorSubject } from 'rxjs';
-import { filter, map, take, tap } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 import { notNull } from '../../utils/not-null';
 import { GithubService } from '../github.service';
 import { ServerConnection, ServerConnectionState } from './server-connection';
