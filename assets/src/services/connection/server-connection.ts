@@ -4,6 +4,7 @@ import { UNAUTHORIZED } from '../../constants';
 import { environment } from '../../environments/environment';
 import { Me_viewer } from '../__generated__/Me';
 import { token } from '../github.service';
+import { UserController } from './user.controller';
 
 function getUrl() {
   const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
@@ -28,7 +29,7 @@ export class ServerConnection {
     },
   });
 
-  readonly userChannel: Channel;
+  readonly userController: UserController;
 
   readonly state$ = new BehaviorSubject<ServerConnectionState>(ServerConnectionState.Connecting);
   readonly error$ = new Subject<unknown>();
@@ -36,19 +37,20 @@ export class ServerConnection {
   private lastError: unknown | null = null;
 
   constructor(user: Me_viewer) {
-    this.userChannel = this.socket.channel(`user:${user.login}`);
+    const userChannel = this.socket.channel(`user:${user.login}`);
+    this.userController = new UserController(userChannel);
     this.socket.onOpen(() => this.state$.next(ServerConnectionState.Authorizing));
     this.socket.onError((error) => {
       this.lastError = error;
       this.error$.next(error);
       this.state$.next(ServerConnectionState.Connecting);
     });
-    this.userChannel.onError((reason) => {
+    userChannel.onError((reason) => {
       this.state$.next(ServerConnectionState.Unauthorized);
       this.lastError = reason;
       this.error$.next(reason);
     });
-    this.userChannel
+    userChannel
       .join()
       .receive('ok', () => {
         this.state$.next(ServerConnectionState.Connected);
@@ -58,7 +60,7 @@ export class ServerConnection {
         this.state$.next(ServerConnectionState.Unauthorized);
         this.lastError = reason;
         this.error$.next(reason);
-        this.userChannel.leave();
+        userChannel.leave();
       });
     this.socket.connect();
   }
@@ -68,7 +70,7 @@ export class ServerConnection {
   }
 
   destroy() {
-    this.userChannel.leave();
+    this.userController.channel.leave();
     this.socket.disconnect();
   }
 }

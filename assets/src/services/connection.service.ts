@@ -2,9 +2,9 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Channel } from 'phoenix';
 import { BehaviorSubject } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
-import { notNull } from '../../utils/not-null';
-import { GithubService } from '../github.service';
-import { ServerConnection, ServerConnectionState } from './server-connection';
+import { notNull } from '../utils/not-null';
+import { ServerConnection, ServerConnectionState } from './connection/server-connection';
+import { GithubService } from './github.service';
 
 @Injectable()
 export class ConnectionService implements OnDestroy {
@@ -31,6 +31,14 @@ export class ConnectionService implements OnDestroy {
     this.initialized = true;
     const me = await this.githubService.getMe().result();
     this.serverConnection$.next(new ServerConnection(me.data.viewer));
+  }
+
+  ensureServerConnection(): Promise<ServerConnection> {
+    const serverConnection = this.serverConnection$.getValue();
+    if (serverConnection) {
+      return Promise.resolve(serverConnection);
+    }
+    return this.serverConnection$.pipe(filter(notNull), take(1)).toPromise();
   }
 
   ngOnDestroy() {

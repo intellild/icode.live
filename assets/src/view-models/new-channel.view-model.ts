@@ -11,6 +11,7 @@ import {
   GistsVariables,
 } from '../services/__generated__/Gists';
 import { GithubService } from '../services/github.service';
+import { NavigationService } from '../services/navigation.service';
 import { notNull } from '../utils/not-null';
 
 @Injectable()
@@ -23,7 +24,11 @@ export class NewChannelViewModel implements OnDestroy {
   readonly files$ = new BehaviorSubject<Gists_viewer_gists_nodes_files[]>([]);
   readonly loading$: Observable<boolean>;
 
-  constructor(private readonly githubService: GithubService, private readonly router: Router) {
+  constructor(
+    private readonly githubService: GithubService,
+    private readonly navigationService: NavigationService,
+    private readonly router: Router,
+  ) {
     this.query = githubService.getGists();
     const value$ = this.query.valueChanges;
     this.list$ = value$.pipe(
@@ -77,11 +82,7 @@ export class NewChannelViewModel implements OnDestroy {
       .getMe()
       .result()
       .then((me) => {
-        this.router.navigate(['/channel', me.data.viewer.login], {
-          queryParams: {
-            gist: gist.name,
-          },
-        });
+        return this.navigationService.hostChannel(me.data.viewer.login, gist.name);
       });
   }
 
@@ -94,11 +95,7 @@ export class NewChannelViewModel implements OnDestroy {
       const { login } = me.data.viewer;
       const { id } = newGist.data;
       sessionStorage.setItem(GIST_CACHE_KEY, id ?? '');
-      return this.router.navigate(['/channel', login], {
-        queryParams: {
-          gist: id,
-        },
-      });
+      return this.navigationService.hostChannel(login, id);
     });
   }
 

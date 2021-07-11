@@ -11,8 +11,9 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { CompoundComponent } from '../components/compound.component';
 import { IndexComponent } from '../components/index.component';
 import { CodeService } from '../services/code.service';
-import { ConnectionService } from '../services/connection';
+import { ConnectionService } from '../services/connection.service';
 import { GithubService } from '../services/github.service';
+import { NavigationService } from '../services/navigation.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -34,7 +35,7 @@ import { GraphQLModule } from './graphql.module';
     NzTabsModule,
     FormsModule,
   ],
-  providers: [CodeService, GithubService, ConnectionService],
+  providers: [CodeService, GithubService, ConnectionService, NavigationService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

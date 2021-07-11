@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Channel } from 'phoenix';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { ConnectionService } from './connection';
+import { ConnectionService } from './connection.service';
 import { GithubService } from './github.service';
 
 @Injectable()
