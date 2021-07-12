@@ -12,9 +12,10 @@ defmodule Icode.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Icode.PubSub},
       # Start the Endpoint (http/https)
-      IcodeWeb.Endpoint
+      IcodeWeb.Endpoint,
       # Start a worker by calling: Icode.Worker.start_link(arg)
       # {Icode.Worker, arg}
+      IcodeWeb.CodeChannel.Presence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
